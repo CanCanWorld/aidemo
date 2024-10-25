@@ -44,7 +44,7 @@ fun ChatItem(item: ChatItemType) {
             .padding(10.dp)
             .clickable {
                 keyboardController?.hide()
-                navHostController.navigate("chat")
+                navHostController.navigate("chat/${item.name}")
             }
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -70,7 +70,7 @@ fun ChatItem(item: ChatItemType) {
             )
         }
         Box(modifier = Modifier.fillMaxHeight()) {
-            Text(text = item.time, fontSize = 12.sp)
+            Text(text = item.time.toString(), fontSize = 12.sp)
         }
     }
 }

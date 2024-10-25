@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
@@ -72,12 +73,12 @@ fun HomeScreen() {
                         contentDescription = "头像"
                     )
                     Spacer(modifier = Modifier.width(20.dp))
-                    Text(text = "猫娘小糖", fontSize = 22.sp, fontWeight = FontWeight.ExtraLight)
+                    Text(text = "测试", fontSize = 22.sp, fontWeight = FontWeight.ExtraLight)
                 }
                 Row {
                     Row(
                         modifier = Modifier
-                            .padding(horizontal =  20.dp)
+                            .padding(horizontal = 20.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(TextFieldBg)
                             .onFocusChanged { vm.isFocused = it.isFocused }
@@ -118,8 +119,8 @@ fun HomeScreen() {
                     }
                 }
                 LazyColumn {
-                    items(5) {
-                        ChatItem(item = ChatItemType("猫娘小糖", "你好", "12:00"))
+                    items(vm.aiList) {
+                        ChatItem(item = it)
                     }
                 }
             }
@@ -136,7 +137,7 @@ fun Modifier.autoCloseKeyboard(): Modifier = composed {
     if (!isKeyboardOpen) {
         DisposableEffect(Unit) {
             focusManager.clearFocus()
-            onDispose {  }
+            onDispose { }
         }
     }
     pointerInput(this) {
