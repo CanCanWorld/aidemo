@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.zrq.aidemo.LocalNavController
 import com.zrq.aidemo.screen.chat.ChatScreen
 import com.zrq.aidemo.screen.home.HomeScreen
+import com.zrq.aidemo.screen.setting.SettingScreen
 
 @Composable
 fun MyNavHost(
@@ -24,6 +25,11 @@ fun MyNavHost(
             route = Route.HomeRoute.route
         ) {
             HomeScreen()
+        }
+        composable(
+            route = Route.SettingRoute.route
+        ) {
+            SettingScreen()
         }
         composable(
             route = "${Route.ChatRoute.route}/{name}",

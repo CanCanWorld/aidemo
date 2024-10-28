@@ -13,9 +13,9 @@ data class ChatEntity (
     @ColumnInfo(name = "time")
     val time: Long,
     @ColumnInfo(name = "is_ai")
-    val isAi: Boolean,
+    val isAi: Int,
     @ColumnInfo(name = "is_config")
-    val isConfig: Boolean,
+    val isConfig: Int,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )

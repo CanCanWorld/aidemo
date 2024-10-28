@@ -10,12 +10,16 @@ import kotlinx.coroutines.flow.Flow
 interface ChatDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-     fun insertChat(chatEntity: ChatEntity)
+    suspend fun insertChat(chatEntity: ChatEntity)
 
-    @Query("SELECT * FROM chat WHERE name = :name and is_config = 'false'")
+    @Query("SELECT * FROM chat WHERE name = :name and is_config = 0")
     fun getChatsByAiName(name: String): Flow<List<ChatEntity>>
 
-    @Query("SELECT * FROM chat WHERE name = :name and is_config = 'true'")
+    @Query("SELECT * FROM chat")
+    fun getChats(): Flow<List<ChatEntity>>
+
+
+    @Query("SELECT * FROM chat WHERE name = :name and is_config = 1")
     fun getConfigByAiName(name: String): Flow<List<ChatEntity>>
 
 }

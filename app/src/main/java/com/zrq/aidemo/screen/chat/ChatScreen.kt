@@ -1,5 +1,6 @@
 package com.zrq.aidemo.screen.chat
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,6 +45,8 @@ import com.zrq.aidemo.ui.theme.SendBg
 import com.zrq.aidemo.ui.theme.TextFieldBg
 import com.zrq.aidemo.ui.theme.White
 import com.zrq.aidemo.vm.ChatVM
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 @Composable
 fun ChatScreen(name: String) {
@@ -51,6 +54,10 @@ fun ChatScreen(name: String) {
     val vm: ChatVM = viewModel()
 
     LaunchedEffect(Unit) {
+        Log.d("TAG", "ChatScreen: 页面重组")
+        launch {
+            vm.getConfigList(name)
+        }.join()
         vm.getChatList(name)
     }
 

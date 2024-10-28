@@ -32,6 +32,7 @@ class ChatVM(app: Application) : AndroidViewModel(app) {
 
     var isFocused by mutableStateOf(false)
     val chatList = mutableStateListOf<ChatItemType>()
+    val configList = mutableStateListOf<ChatItemType>()
     val chatDao by lazy { AppDatabase.getInstance(app).chatDao() }
 
     fun sendMessage(msg: String) {
@@ -41,8 +42,12 @@ class ChatVM(app: Application) : AndroidViewModel(app) {
             isLoading = true
             val map = mutableMapOf<String, Any>()
             map["model"] = "glm-4-plus"
+
             val messages = mutableListOf<Delta>()
-            messages.add(Delta("你现在的人设是练习时长两年半的个人练习生蔡徐坤，喜欢唱、跳、rap和篮球，😙", "user"))
+            configList.forEach { config ->
+                Log.d(TAG, "输入人设: ${config.content}")
+                messages.add(Delta(config.content, "system"))
+            }
             messages.add(Delta(msg, "user"))
             map["messages"] = messages
             map["stream"] = true
@@ -62,8 +67,7 @@ class ChatVM(app: Application) : AndroidViewModel(app) {
                         val data = line.substringAfter("data: ")
                         if (data == "[DONE]") {
                             isLoading = false
-                            chatList.add(ChatItemType(aiName, aiMessage, System.currentTimeMillis(), true))
-                            chatDao.insertChat(ChatEntity(aiName, aiMessage, System.currentTimeMillis(), isAi = true, isConfig = false))
+                            chatDao.insertChat(ChatEntity(aiName, aiMessage, System.currentTimeMillis(), isAi = 1, isConfig = 0))
                             aiMessage = ""
                             break
                         }
@@ -81,8 +85,9 @@ class ChatVM(app: Application) : AndroidViewModel(app) {
 
     fun addUserMessage() {
         if (message.isBlank()) return
-        chatList.add(ChatItemType("user", message, System.currentTimeMillis(), false))
-        chatDao.insertChat(ChatEntity("user", message, System.currentTimeMillis(), isAi = false, isConfig = false))
+        viewModelScope.launch {
+            chatDao.insertChat(ChatEntity(aiName, message, System.currentTimeMillis(), isAi = 0, isConfig = 0))
+        }
         message = ""
     }
 
@@ -90,15 +95,32 @@ class ChatVM(app: Application) : AndroidViewModel(app) {
         aiName = name
         viewModelScope.launch {
             val chats = chatDao.getChatsByAiName(aiName)
-            chats.collect { chat->
-                Log.d(TAG, "getChatList: $chat")
+            chats.collect { chat ->
+                chatList.clear()
                 chat.forEach {
-                    chatList.add(ChatItemType(it.name, it.content, it.time, it.isAi))
+                    Log.d(TAG, "chatList: $it")
+                    chatList.add(ChatItemType(it.name, it.content, it.time, it.isAi == 1))
                 }
-                Log.d(TAG, "chatList: $chatList")
-                Log.d(TAG, "isEmpty: ${chatList.isEmpty()}")
                 if (chatList.isEmpty()) {
+                    Log.d(TAG, "没有聊天记录，自动发送消息")
+                    if (configList.isEmpty()) {
+                        Log.d(TAG, "没有人设，等待人设获取")
+                        delay(500)
+                    }
                     sendMessage("你好")
+                }
+            }
+        }
+    }
+
+    fun getConfigList(name: String) {
+        aiName = name
+        viewModelScope.launch {
+            val chats = chatDao.getConfigByAiName(aiName)
+            chats.collect { chat ->
+                chat.forEach {
+                    Log.d(TAG, "configList: $it")
+                    configList.add(ChatItemType(it.name, it.content, it.time, it.isAi == 1))
                 }
             }
         }

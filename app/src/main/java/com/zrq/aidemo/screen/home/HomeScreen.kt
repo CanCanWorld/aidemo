@@ -2,6 +2,7 @@ package com.zrq.aidemo.screen.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,9 +23,9 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -39,9 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zrq.aidemo.LocalNavController
 import com.zrq.aidemo.R
+import com.zrq.aidemo.navigation.Route
 import com.zrq.aidemo.screen.home.component.ChatItem
-import com.zrq.aidemo.type.ChatItemType
 import com.zrq.aidemo.ui.theme.MainBg
 import com.zrq.aidemo.ui.theme.SearchBg
 import com.zrq.aidemo.ui.theme.TextFieldBg
@@ -51,6 +53,10 @@ import com.zrq.aidemo.vm.HomeVM
 @Composable
 fun HomeScreen() {
     val vm: HomeVM = viewModel()
+    val navHostController = LocalNavController.current
+    LaunchedEffect(Unit) {
+        vm.init()
+    }
     Scaffold { paddingValues ->
         Box(
             modifier = Modifier
@@ -67,8 +73,11 @@ fun HomeScreen() {
                     modifier = Modifier.padding(top = 30.dp, bottom = 20.dp, start = 20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     Image(
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable { navHostController.navigate(Route.SettingRoute.route) },
                         painter = painterResource(id = R.drawable.img_user),
                         contentDescription = "头像"
                     )
