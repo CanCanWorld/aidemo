@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -43,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zrq.aidemo.LocalNavController
 import com.zrq.aidemo.R
 import com.zrq.aidemo.navigation.Route
+import com.zrq.aidemo.screen.component.MainScreen
 import com.zrq.aidemo.screen.home.component.ChatItem
 import com.zrq.aidemo.ui.theme.MainBg
 import com.zrq.aidemo.ui.theme.SearchBg
@@ -57,81 +60,58 @@ fun HomeScreen() {
     LaunchedEffect(Unit) {
         vm.init()
     }
-    Scaffold { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .autoCloseKeyboard()
-                .background(MainBg)
-                .padding(paddingValues)
-        ) {
-            Column(
+    MainScreen(
+        painter = painterResource(id = R.drawable.img_user),
+        title = "AI女友",
+        onImageClick = { navHostController.navigate(Route.SettingRoute.route) }
+    ) {
+
+        Row {
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(TextFieldBg)
+                    .onFocusChanged { vm.isFocused = it.isFocused }
             ) {
-                Row(
-                    modifier = Modifier.padding(top = 30.dp, bottom = 20.dp, start = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp)
+                        .padding(10.dp),
                 ) {
-
-                    Image(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clickable { navHostController.navigate(Route.SettingRoute.route) },
-                        painter = painterResource(id = R.drawable.img_user),
-                        contentDescription = "头像"
-                    )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Text(text = "测试", fontSize = 22.sp, fontWeight = FontWeight.ExtraLight)
-                }
-                Row {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(TextFieldBg)
-                            .onFocusChanged { vm.isFocused = it.isFocused }
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(40.dp)
-                                .padding(10.dp),
-                        ) {
-                            BasicTextField(
-                                modifier = Modifier.fillMaxSize(),
-                                value = vm.keyword,
-                                onValueChange = {
-                                    vm.keyword = it
-                                }
-                            ) { innerTextField ->
-                                if (vm.keyword.isEmpty() && !vm.isFocused) {
-                                    Text(
-                                        modifier = Modifier.offset(y = (-2).dp),
-                                        text = "Search..."
-                                    )
-                                }
-                                innerTextField()
-                            }
+                    BasicTextField(
+                        modifier = Modifier.fillMaxSize(),
+                        value = vm.keyword,
+                        onValueChange = {
+                            vm.keyword = it
                         }
+                    ) { innerTextField ->
+                        if (vm.keyword.isEmpty() && !vm.isFocused) {
+                            Text(
+                                modifier = Modifier.offset(y = (-2).dp),
+                                text = "Search..."
+                            )
+                        }
+                        innerTextField()
+                    }
+                }
 
-                        Icon(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(SearchBg)
-                                .size(40.dp)
-                                .padding(10.dp),
-                            painter = painterResource(id = R.drawable.img_search),
-                            tint = White,
-                            contentDescription = "搜索"
-                        )
-                    }
-                }
-                LazyColumn {
-                    items(vm.aiList) {
-                        ChatItem(item = it)
-                    }
-                }
+                Icon(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(SearchBg)
+                        .size(40.dp)
+                        .padding(10.dp),
+                    painter = painterResource(id = R.drawable.img_search),
+                    tint = White,
+                    contentDescription = "搜索"
+                )
+            }
+        }
+        LazyColumn {
+            items(vm.aiList) {
+                ChatItem(item = it)
             }
         }
     }

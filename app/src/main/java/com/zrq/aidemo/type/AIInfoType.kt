@@ -3,10 +3,8 @@ package com.zrq.aidemo.type
 import androidx.annotation.Keep
 
 @Keep
-data class ChatItemType(
+data class AIInfoType (
     val name: String,
-    var content: String,
-    val time: Long,
+    val config: String,
     val image: String,
-    val isAi: Boolean
 )

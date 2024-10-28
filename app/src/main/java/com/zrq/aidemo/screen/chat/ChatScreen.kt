@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -35,9 +39,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberImagePainter
 import com.zrq.aidemo.R
 import com.zrq.aidemo.screen.chat.component.AiChatItem
 import com.zrq.aidemo.screen.chat.component.UserChatItem
+import com.zrq.aidemo.screen.component.MainScreen
 import com.zrq.aidemo.screen.home.autoCloseKeyboard
 import com.zrq.aidemo.type.ChatItemType
 import com.zrq.aidemo.ui.theme.MainBg
@@ -52,40 +58,32 @@ import kotlinx.coroutines.launch
 fun ChatScreen(name: String) {
 
     val vm: ChatVM = viewModel()
+    val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         Log.d("TAG", "ChatScreen: 页面重组")
         launch {
             vm.getConfigList(name)
         }.join()
-        vm.getChatList(name)
+        launch {
+            vm.getChatList(name) {
+                if (vm.chatList.size - 1 > 0) {
+                    listState.scrollToItem(vm.chatList.size - 1)
+                }
+            }
+        }
     }
 
-    Scaffold { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .autoCloseKeyboard()
-                .background(MainBg)
-                .padding(paddingValues)
-        ) {
-            Row(
-                modifier = Modifier.padding(top = 30.dp, bottom = 20.dp, start = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    modifier = Modifier.size(40.dp),
-                    painter = painterResource(id = R.drawable.img_user),
-                    contentDescription = "头像"
-                )
-                Spacer(modifier = Modifier.width(20.dp))
-                Text(text = vm.aiName, fontSize = 22.sp, fontWeight = FontWeight.ExtraLight)
-            }
-
+    MainScreen(
+        painter = rememberImagePainter(data = vm.aiImage),
+        title = name
+    ) {
+        Column {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
+                state = listState,
             ) {
                 items(vm.chatList) {
                     if (it.isAi) {
@@ -97,12 +95,13 @@ fun ChatScreen(name: String) {
                 if (vm.aiMessage != "") {
                     item {
                         AiChatItem(
-                            item = ChatItemType(vm.aiName, vm.aiMessage, System.currentTimeMillis(), true),
+                            item = ChatItemType(vm.aiName, vm.aiMessage, System.currentTimeMillis(), vm.aiImage, true),
                             vm.isLoading
                         )
                     }
                 }
             }
+            // 输入框
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

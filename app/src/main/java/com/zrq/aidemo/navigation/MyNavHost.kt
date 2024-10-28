@@ -10,6 +10,7 @@ import com.zrq.aidemo.LocalNavController
 import com.zrq.aidemo.screen.chat.ChatScreen
 import com.zrq.aidemo.screen.home.HomeScreen
 import com.zrq.aidemo.screen.setting.SettingScreen
+import com.zrq.aidemo.screen.setting.log.LogScreen
 
 @Composable
 fun MyNavHost(
@@ -30,6 +31,11 @@ fun MyNavHost(
             route = Route.SettingRoute.route
         ) {
             SettingScreen()
+        }
+        composable(
+            route = Route.LogRoute.route
+        ) {
+            LogScreen()
         }
         composable(
             route = "${Route.ChatRoute.route}/{name}",

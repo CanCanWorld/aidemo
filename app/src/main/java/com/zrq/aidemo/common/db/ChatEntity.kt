@@ -16,6 +16,8 @@ data class ChatEntity (
     val isAi: Int,
     @ColumnInfo(name = "is_config")
     val isConfig: Int,
+    @ColumnInfo(name = "image")
+    val image: String,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 )

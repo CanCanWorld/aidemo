@@ -18,8 +18,13 @@ interface ChatDao {
     @Query("SELECT * FROM chat")
     fun getChats(): Flow<List<ChatEntity>>
 
+    @Query("SELECT DISTINCT name FROM chat")
+    fun getAis(): Flow<List<String>>
 
     @Query("SELECT * FROM chat WHERE name = :name and is_config = 1")
     fun getConfigByAiName(name: String): Flow<List<ChatEntity>>
+
+    @Query("SELECT * FROM chat WHERE name = :name order by time desc limit 1")
+    suspend fun getLastChat(name: String): ChatEntity
 
 }

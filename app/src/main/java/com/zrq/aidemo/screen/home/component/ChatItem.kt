@@ -1,5 +1,6 @@
 package com.zrq.aidemo.screen.home.component
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,22 +19,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.zrq.aidemo.LocalNavController
 import com.zrq.aidemo.R
+import com.zrq.aidemo.common.utils.timerFormat
 import com.zrq.aidemo.screen.home.autoCloseKeyboard
 import com.zrq.aidemo.type.ChatItemType
 import com.zrq.aidemo.ui.theme.White70
 
 @Composable
 fun ChatItem(item: ChatItemType) {
+    Log.d("ChatItem", "ChatItem: $item")
     val keyboardController = LocalSoftwareKeyboardController.current
     val navHostController = LocalNavController.current
     Row(
@@ -53,7 +59,8 @@ fun ChatItem(item: ChatItemType) {
             modifier = Modifier
                 .size(40.dp)
                 .shadow(10.dp, shape = CircleShape),
-            painter = painterResource(id = R.drawable.img_user),
+            contentScale = ContentScale.Crop,
+            painter = rememberImagePainter(data = item.image),
             contentDescription = "头像"
         )
         Spacer(modifier = Modifier.width(20.dp))
@@ -70,7 +77,7 @@ fun ChatItem(item: ChatItemType) {
             )
         }
         Box(modifier = Modifier.fillMaxHeight()) {
-            Text(text = item.time.toString(), fontSize = 12.sp)
+            Text(text = item.time.timerFormat(), fontSize = 12.sp)
         }
     }
 }
