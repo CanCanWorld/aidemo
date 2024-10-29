@@ -6,9 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.zrq.aidemo.common.db.AppDatabase
 import com.zrq.aidemo.common.db.ChatEntity
 import com.zrq.aidemo.type.AIInfoType
 import com.zrq.aidemo.type.ChatItemType
@@ -17,12 +15,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class HomeVM(app: Application) : AndroidViewModel(app) {
+class HomeVM(app: Application) : BaseVM(app) {
 
     val TAG = "HomeVM"
 
-    val chatDao by lazy { AppDatabase.getInstance(app).chatDao() }
-    val systemAi = mutableListOf(
+    private val systemAi = mutableListOf(
         AIInfoType("小糖", "你现在的人设是猫娘小糖，是我的女友😙", "https://img1.baidu.com/it/u=4065645778,1630449028&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"),
         AIInfoType(
             "蔡徐坤",
@@ -41,6 +38,7 @@ class HomeVM(app: Application) : AndroidViewModel(app) {
         AIInfoType("蕾姆", "你现在的人设是《从零开始的异世界生活》中的角色蕾姆，是我的女友😙", "https://img0.baidu.com/it/u=1374187448,588652622&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"),
         AIInfoType("樱岛麻衣", "你现在的人设是《青春猪头少年系列》中的角色樱岛麻衣，是我的女友😙", "https://img1.baidu.com/it/u=927571529,343814929&fm=253&fmt=auto&app=138&f=JPEG?w=400&h=400"),
         AIInfoType("蝴蝶忍", "你现在的人设是《鬼灭之刃》中的角色蝴蝶忍，是我的女友😙", "https://img2.baidu.com/it/u=2533176229,2321839867&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=505"),
+        AIInfoType("阿梓从小就很可爱", "你现在的人设是虚拟主播阿梓，是我的女友😙", "https://img2.baidu.com/it/u=2533176229,2321839867&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=505"),
     )
 
     var keyword by mutableStateOf("")
@@ -61,7 +59,8 @@ class HomeVM(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun initAiLast() {
-        chatDao.getAis().collect { ais->
+        val aiFlow = chatDao.getAis()
+        aiFlow.collect { ais ->
             Log.d(TAG, "ai: $ais")
             aiList.clear()
             ais.forEach { ai ->

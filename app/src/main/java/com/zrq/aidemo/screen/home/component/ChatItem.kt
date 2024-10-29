@@ -39,7 +39,6 @@ import com.zrq.aidemo.ui.theme.White70
 
 @Composable
 fun ChatItem(item: ChatItemType) {
-    Log.d("ChatItem", "ChatItem: $item")
     val keyboardController = LocalSoftwareKeyboardController.current
     val navHostController = LocalNavController.current
     Row(

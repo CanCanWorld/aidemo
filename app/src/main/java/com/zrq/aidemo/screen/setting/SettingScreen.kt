@@ -54,6 +54,9 @@ fun SettingScreen() {
     MainScreen(
         painter = painterResource(id = R.drawable.img_user),
         title = "AI女友",
+        onImageClick = {
+            navHostController.popBackStack()
+        }
     ) {
         LazyColumn {
             item {

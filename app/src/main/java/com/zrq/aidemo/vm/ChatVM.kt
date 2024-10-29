@@ -7,11 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.tencent.mmkv.MMKV
-import com.zrq.aidemo.common.db.AppDatabase
 import com.zrq.aidemo.common.db.ChatEntity
 import com.zrq.aidemo.common.network.RetrofitClient.okHttpClient
 import com.zrq.aidemo.type.ChatItemType
@@ -28,7 +25,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import kotlin.math.abs
 
-class ChatVM(app: Application) : AndroidViewModel(app) {
+class ChatVM(app: Application) : BaseVM(app) {
 
     val TAG = "ChatVM"
     var aiName by mutableStateOf("")
@@ -40,9 +37,7 @@ class ChatVM(app: Application) : AndroidViewModel(app) {
     var isFocused by mutableStateOf(false)
     val chatList = mutableStateListOf<ChatItemType>()
     val configList = mutableStateListOf<ChatItemType>()
-    val chatDao by lazy { AppDatabase.getInstance(app).chatDao() }
     var onchange: suspend () -> Unit = {}
-    val mmkv: MMKV by lazy { MMKV.defaultMMKV() }
 
     fun sendMessage(msg: String) {
         Log.d(TAG, "sendMessage: $msg")
@@ -67,9 +62,7 @@ class ChatVM(app: Application) : AndroidViewModel(app) {
                 .catch {
                     isLoading = false
                     aiMessage = ""
-                    launch(Dispatchers.Main) {
-                        Toast.makeText(getApplication(), "请求失败", Toast.LENGTH_SHORT).show()
-                    }
+                    toast("请求失败")
                     it.printStackTrace()
                 }
                 .collect {
@@ -89,7 +82,7 @@ class ChatVM(app: Application) : AndroidViewModel(app) {
     }
 
     private fun requestChat(body: RequestBody) = flow {
-        val speed = mmkv.getInt("speed", 1)
+        val speed = mmkv.getInt("speed", 2)
         val delay = abs(3 - speed) * 100
         Log.d(TAG, "delay: $delay")
         val request = Request.Builder()

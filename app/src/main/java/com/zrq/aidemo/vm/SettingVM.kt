@@ -7,10 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import com.tencent.mmkv.MMKV
 
-class SettingVM(app: Application) : AndroidViewModel(app) {
+class SettingVM(app: Application) : BaseVM(app) {
 
     val TAG = "LogVM"
-    val mmkv: MMKV by lazy { MMKV.defaultMMKV() }
     var speed by mutableFloatStateOf(0f)
 
     fun updateSpeed(newValue: Float) {
