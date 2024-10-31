@@ -19,10 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
 import com.zrq.aidemo.screen.home.autoCloseKeyboard
 import com.zrq.aidemo.ui.theme.MainBg
 
@@ -52,6 +52,7 @@ fun MainScreen(
                         .size(40.dp)
                         .shadow(10.dp, shape = CircleShape)
                         .clickable { onImageClick() },
+                    contentScale = ContentScale.Crop,
                     painter = painter,
                     contentDescription = "头像"
                 )

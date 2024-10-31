@@ -44,7 +44,7 @@ class ChatVM(app: Application) : BaseVM(app) {
         if (msg.isBlank()) return
         viewModelScope.launch(Dispatchers.IO) {
             val map = mutableMapOf<String, Any>()
-            map["model"] = "glm-4-plus"
+            map["model"] = "glm-4-flash"
             val messages = mutableListOf<Delta>()
             configList.forEach { config ->
                 Log.d(TAG, "输入人设: $config")
