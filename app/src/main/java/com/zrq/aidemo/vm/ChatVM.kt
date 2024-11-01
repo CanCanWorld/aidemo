@@ -51,6 +51,12 @@ class ChatVM(app: Application) : BaseVM(app) {
                 aiImage = config.image
                 messages.add(Delta(config.content, "system"))
             }
+            chatList.forEach { chat ->
+                if (chat.isAi) {
+                    Log.d(TAG, "输入聊天记录: $chat")
+                    messages.add(Delta(chat.content, "system"))
+                }
+            }
             messages.add(Delta(msg, "user"))
             map["messages"] = messages
             map["stream"] = true
